@@ -21,6 +21,32 @@ def folderWebPtoPNG(folderPath, output_path):
                 input_path = os.path.join(root, f)
                 convertWebPtoPNG(input_path, output_path+"\\"+f.split(".")[0]+".png")
 
+
+
+
+
+def convertWebPtoPNG(input_path, output_path):
+    try:
+        image = Image.open(input_path)
+        image.save(output_path, "PNG")
+        print(f"Converted {input_path} to PNG [{image.size}]")
+    except Exception as e:
+        print(f"Error on {input_path}: {e}")
+
+
+
+counter = 0
+def foldertoPNG(folderPath, output_path):
+    global counter
+    for root, _, files in os.walk(folderPath):
+        for f in files:
+            input_path = os.path.join(root, f)
+            convertWebPtoPNG(input_path, output_path+"\\"+str(counter)+".png")
+            counter+=1
+
+
+
+
 def scaleImage(input_path, output_path, dim):
     image = Image.open(input_path)
     resized = image.resize(dim)
@@ -36,8 +62,8 @@ def scaleFolder(folderPath, output_path, dim):
             scaleImage(input_path, output_path, dim)
 
 
-def imageToPx(input_path):
-    image = Image.open(input_path)
+def imageToPx(input_path, mode="RGB"):
+    image = Image.open(input_path).convert(mode)
     twoDArray = np.array(image)
     oneDArray = twoDArray.ravel()
     #print(twoDArray[0])
@@ -60,5 +86,5 @@ def folderToPx(folderPath):
 #for i in imagesPx:
 #    print(len(i))
 
-#folderWebPtoPNG("C:\\Users\\vjgti\\Downloads\\NFL_teams", "C:\\Users\\vjgti\\PycharmProjects\\cs3200_termProject\\.venv\\images\\NFL_teams\\labeled")
-#scaleFolder("C:\\Users\\vjgti\\PycharmProjects\\cs3200_termProject\\.venv\\images\\NFL_teams\\labeled", "C:\\Users\\vjgti\\PycharmProjects\\cs3200_termProject\\.venv\\images\\NFL_teams\\labeled_sizeprocessed", (500, 500))
+#foldertoPNG("C:\\Users\\vjgti\\Downloads\\NBA_unlabeled\\allData", "C:\\Users\\vjgti\\PycharmProjects\\cs3200_termProject\\.venv\\images\\NBA_teams\\unlabeled")
+#scaleFolder("C:\\Users\\vjgti\\PycharmProjects\\cs3200_termProject\\.venv\\images\\NBA_teams\\unlabeled", "C:\\Users\\vjgti\\PycharmProjects\\cs3200_termProject\\.venv\\images\\NBA_teams\\unlabeled_sizeprocessed", (500, 500))
