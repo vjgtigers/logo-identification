@@ -31,7 +31,7 @@ saveScalerAndPCA = False
 loadScalersandPCAS = True
 clusters = 30
 neighbors = 2
-
+runKMeans = True
 
 
 if loadScalersandPCAS == False:
@@ -216,14 +216,20 @@ if showPCAgraphs == True:
 #run KNN
     #determine best K
 
-printCurrTimeAndMessage("Beginning KNN")
 
 if runKNN == True:
+    printCurrTimeAndMessage("Beginning KNN")
     knn = sklearn.neighbors.KNeighborsClassifier(n_neighbors=neighbors)
     knn.fit(X_pca_train, y_train)
 
 #run K-means
     #amount of clusters is number of logos to identify
+
+
+if runKMeans == True:
+    printCurrTimeAndMessage("Beginning KMeans")
+    kmeans = sklearn.cluster.KMeans(n_clusters=len(np.unique(y_test)), random_state=seed)
+    kmeans.fit(X_pca_un_train)
 
 #accuracy testing (fine for KNN, alternative needed for K-means)
 if runKNN == True:
@@ -233,6 +239,22 @@ if runKNN == True:
     prediction_train = knn.predict(X_pca_train)
     printCurrTimeAndMessage(f"KNN Accuracy (test)= {sklearn.metrics.accuracy_score(y_test, prediction_test)}")
     printCurrTimeAndMessage(f"KNN Accuracy (train)= {sklearn.metrics.accuracy_score(y_train, prediction_train)}")
+
+
+
+#Kmeans?
+#kmeans_pred = kmeans.predict(X_pca_un_test)
+#cm = sklearn.metrics.confusion_matrix(temp, kmeans_pred)
+#row_ind, col_ind = linear_sum_assignment(-cm)
+#accuracy = cm[row_ind, col_ind].sum() / y_test.size
+#
+#print("KMeans accuracy:", accuracy)
+#
+#labels = kmeans.labels_
+#centroids = kmeans.cluster_centers_
+#plt.scatter(X_pca_un_train[:, 0], X_pca_un_train[:, 1], c=labels, cmap='viridis', s=50)
+#plt.scatter(centroids[:, 0], centroids[:, 1], c='red', marker='X', s=200)
+#plt.show()
 
 #use K-means to label data?
 
