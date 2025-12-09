@@ -1,12 +1,19 @@
-print(f"Starting program")
+from datetime import datetime
+
+def printCurrTimeAndMessage(message):
+    currTime = datetime.now().strftime("%H:%M:%S")
+    print(f"[{currTime}] {message}")
+printCurrTimeAndMessage("Program Start")
+
+
 import numpy as np
 import preProFuncts
 import joblib
 import sklearn
-
+import time
 import matplotlib.pyplot as plt
 
-print(f"Done loading in imports")
+printCurrTimeAndMessage("Done loading imports")
 
 #select how many images from the image dataset i want
 imagesToLoad = 0
@@ -28,7 +35,7 @@ neighbors = 2
 
 
 if loadScalersandPCAS == False:
-
+    printCurrTimeAndMessage("Loading dataset")
     #load in image data set
 
     images = []
@@ -41,6 +48,8 @@ if loadScalersandPCAS == False:
         #if doesnt work reduce pixel count to like a 32x32
 
     print(f"images loaded: {len(images)}")
+
+    printCurrTimeAndMessage("pre preprocessing")
 
     data = []
     target = []
@@ -64,12 +73,13 @@ if loadScalersandPCAS == False:
         data_unlabeled.append(i[0])
     X_un = np.array(data_unlabeled)
 
+    printCurrTimeAndMessage("pre preprocessing done")
     #TODO: normalize/standardize pixel colors -- this should happen before converting to a one D array
 
     #test/train split
         #only do after adding in more images than basic ones
 
-
+    printCurrTimeAndMessage("Test/Train split")
     X_train, X_test, y_train, y_test = X, X, y, y
     X_un_train, X_un_test= X_un, X_un
     if testTrainSplit == True:
@@ -81,43 +91,49 @@ if loadScalersandPCAS == False:
         #determine pca components value
 
 
-    print(f"Done converting to X/y and numeric encodings")
+    printCurrTimeAndMessage("Begin preprocessing")
 
+    printCurrTimeAndMessage("scalar/pca creation")
     scalerVar = sklearn.preprocessing.StandardScaler()
     pcaVar = sklearn.decomposition.PCA(n_components=.90)
 
     scaler_un = sklearn.preprocessing.StandardScaler()
     pca_un = sklearn.decomposition.PCA(n_components=.90)
 
+    printCurrTimeAndMessage("StandardScaler labeled/unlabeled data")
     X_centered_train = scalerVar.fit_transform(X_train)
     X_centered_test = scalerVar.transform(X_test)
 
     X_centered_un_train = scaler_un.fit_transform(X_un_train)
     X_centered_un_test = scaler_un.transform(X_un_test)
 
-    print(f"Done StandardScaling")
-
+    printCurrTimeAndMessage("Done StandardScaling")
+    printCurrTimeAndMessage("PCA labeled data")
 
     X_pca_train = pcaVar.fit_transform(X_centered_train)
     X_pca_test = pcaVar.transform(X_centered_test)
 
+    printCurrTimeAndMessage("PCA unlabeled data")
 
     X_pca_un_train = pca_un.fit_transform(X_centered_un_train)
     X_pca_un_test = pca_un.transform(X_centered_un_test)
 
-    print(f"Done applying PCA")
+    printCurrTimeAndMessage("Done applying PCA")
 
 
 if loadScalersandPCAS == True:
     #load scalers
+    printCurrTimeAndMessage("Loading Scalers")
     scalerVar = joblib.load("./modelInfo/scaler_labeled.pkl")
     scaler_un = joblib.load("./modelInfo/scaler_unlabeled.pkl")
 
     #load PCA models
+    printCurrTimeAndMessage("Loading PCA's")
     pcaVar = joblib.load("./modelInfo/pca_labeled.pkl")
     pca_un = joblib.load("./modelInfo/pca_unlabeled.pkl")
 
     #Load pca data
+    printCurrTimeAndMessage("Loading preprocessed labeled dataset")
     X_pca_train = np.load("./modelInfo/X_lab_train_pca.npy")
     X_pca_test = np.load("./modelInfo/X_lab_test_pca.npy")
 
@@ -126,6 +142,7 @@ if loadScalersandPCAS == True:
     y_test = np.load("./modelInfo/y_test.npy")
 
     #load unlabeled data
+    printCurrTimeAndMessage("Loading preprocessed unlabeled dataset")
     X_pca_un_train = np.load("./modelInfo/X_unlab_train_pca.npy")
     X_pca_un_test = np.load("./modelInfo/X_unlab_test_pca.npy")
 
@@ -144,7 +161,10 @@ if saveScalerAndPCA == True:
 # SAVE EVERYTHING
 # ============================================================
 """)
+    printCurrTimeAndMessage("Saving models and datasets")
+
     #save models
+    print("Saving models")
     joblib.dump(scalerVar, "./modelInfo/scaler_labeled.pkl")
     joblib.dump(scaler_un, "./modelInfo/scaler_unlabeled.pkl")
 
@@ -153,6 +173,7 @@ if saveScalerAndPCA == True:
 
 
     #save modified data
+    print("Saving modified datasets")
     np.save("./modelInfo/X_lab_train_pca.npy", X_pca_train)
     np.save("./modelInfo/X_lab_test_pca.npy",  X_pca_test)
     np.save("./modelInfo/y_train.npy", y_train)
@@ -162,7 +183,7 @@ if saveScalerAndPCA == True:
     np.save("./modelInfo/X_unlab_test_pca.npy",  X_pca_un_test)
 
 
-    print("Done Saving")
+    printCurrTimeAndMessage("Done Saving")
 
 
 
@@ -195,6 +216,8 @@ if showPCAgraphs == True:
 #run KNN
     #determine best K
 
+printCurrTimeAndMessage("Beginning KNN")
+
 if runKNN == True:
     knn = sklearn.neighbors.KNeighborsClassifier(n_neighbors=neighbors)
     knn.fit(X_pca_train, y_train)
@@ -208,8 +231,8 @@ if runKNN == True:
         print("TEST TRAIN NOT ENABLED")
     prediction_test = knn.predict(X_pca_test)
     prediction_train = knn.predict(X_pca_train)
-    print(f"KNN Accuracy (test)= {sklearn.metrics.accuracy_score(y_test, prediction_test)}")
-    print(f"KNN Accuracy (train)= {sklearn.metrics.accuracy_score(y_train, prediction_train)}")
+    printCurrTimeAndMessage(f"KNN Accuracy (test)= {sklearn.metrics.accuracy_score(y_test, prediction_test)}")
+    printCurrTimeAndMessage(f"KNN Accuracy (train)= {sklearn.metrics.accuracy_score(y_train, prediction_train)}")
 
 #use K-means to label data?
 
@@ -225,9 +248,9 @@ if runKNN == True:
 ##-------
 ##Things that dont belong in pipeline
 
-#develop way to save all of the data after preprocessing if it takes a while to load to reduce loading times
+#develop way to save all of the data after preprocessing if it takes a while to load to reduce loading times  --- done
 
-#save model data after training so it doesnt need to be trained again if that model is needed again
+#save model data after training so it doesnt need to be trained again if that model is needed again  --- done
 
 #cluster id to label by majority vote?
 
