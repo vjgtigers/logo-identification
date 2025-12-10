@@ -46,7 +46,7 @@ def foldertoPNG(folderPath, output_path):
 
 
 
-
+#only provide directory path for the output path and gets file name from original file name
 def scaleImage(input_path, output_path, dim):
     image = Image.open(input_path)
     resized = image.resize(dim)
@@ -54,6 +54,12 @@ def scaleImage(input_path, output_path, dim):
     resized.save(output_path + "\\" + name)
     print(f"Scaled {input_path}: [{image.size}]->[{dim}]")
 
+#provide both the input path w/ file name and output path w/ file name
+def scaleImage2(input_path, output_path, dim):
+    image = Image.open(input_path)
+    resized = image.resize(dim)
+    resized.save(output_path)
+    print(f"Scaled {input_path}: [{image.size}]->[{dim}]")
 
 def scaleFolder(folderPath, output_path, dim):
     for root, _, files in os.walk(folderPath):
@@ -77,6 +83,27 @@ def folderToPx(folderPath):
             input_path = os.path.join(root, f)
             images.append((imageToPx(input_path), f))
     return images
+
+
+
+#borrowed from my CS4420 class simulation group project (https://github.com/vjgtigers/traffic-sim/blob/master/utility.py)
+def get_unique_filename(filepath):
+    """
+    If filepath exists, append a number to make it unique.
+    Example: file.txt -> file_1.txt -> file_2.txt, etc.
+    """
+    if not os.path.exists(filepath):
+        return filepath
+
+    # Split into base name and extension
+    base, ext = os.path.splitext(filepath)
+
+    counter = 1
+    while True:
+        new_filepath = f"{base}_{counter}{ext}"
+        if not os.path.exists(new_filepath):
+            return new_filepath
+        counter += 1
 
 
 

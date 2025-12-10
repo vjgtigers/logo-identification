@@ -23,7 +23,7 @@ imagesToLoad = 0
 #config
 seed = 1
 splitDataSet = False
-showPCAgraphs = True
+showPCAgraphs = False
 testTrainSplit = True
 runKNN = True
 onlyMLBPreprocessing = True
@@ -32,7 +32,7 @@ loadScalersandPCAS = True
 clusters = 30
 neighbors = 2
 runKMeans = True
-
+saveKNN = True
 
 if loadScalersandPCAS == False:
     printCurrTimeAndMessage("Loading dataset")
@@ -221,6 +221,10 @@ if runKNN == True:
     printCurrTimeAndMessage("Beginning KNN")
     knn = sklearn.neighbors.KNeighborsClassifier(n_neighbors=neighbors)
     knn.fit(X_pca_train, y_train)
+    if saveKNN == True:
+        joblib.dump(knn, "./modelInfo/knnModel.pkl")
+        joblib.dump(pcaVar, "./modelInfo/pca_labeled.pkl")
+        joblib.dump(scalerVar, "./modelInfo/scaler_labeled.pkl")
 
 #run K-means
     #amount of clusters is number of logos to identify
