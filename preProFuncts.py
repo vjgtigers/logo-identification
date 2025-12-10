@@ -58,6 +58,13 @@ def scaleImage2(input_path, output_path, dim):
     resized.save(output_path)
     print(f"Scaled {input_path}: [{image.size}]->[{dim}]")
 
+def returnScaledImageIn1DArray(input_path, dim):
+    image = Image.open(input_path).convert("RGB")
+    resized = image.resize(dim)
+    twoD = np.array(resized)
+    oneD = twoD.ravel()
+    return oneD
+
 def scaleFolder(folderPath, output_path, dim):
     for root, _, files in os.walk(folderPath):
         for f in files:
