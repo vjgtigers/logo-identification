@@ -22,9 +22,6 @@ def folderWebPtoPNG(folderPath, output_path):
                 convertWebPtoPNG(input_path, output_path+"\\"+f.split(".")[0]+".png")
 
 
-
-
-
 def convertWebPtoPNG(input_path, output_path):
     try:
         image = Image.open(input_path)

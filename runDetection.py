@@ -6,7 +6,7 @@ import preProFuncts
 #config info
 KNN_path = "./modelInfo/knnModel.pkl"
 standardScaler_path = "./modelInfo/scaler_labeled.pkl"
-PCA_path = "./modelInfo/scaler_labeled.pkl"
+PCA_path = "./modelInfo/pca_labeled.pkl"
 
 #load models
 standardScaler = joblib.load(standardScaler_path)
@@ -21,3 +21,10 @@ filePath = input("Image file path: ")
 sizeCorrection = preProFuncts.get_unique_filename(filePath)
 
 preProFuncts.scaleImage2(filePath, sizeCorrection, (500, 500))
+image1DArray = preProFuncts.imageToPx(sizeCorrection)
+reshaped = image1DArray.reshape(1, -1)
+image_scaled = standardScaler.transform(reshaped)
+image_pca = PCA.transform(image_scaled)
+
+pred = knn.predict(image_pca)
+print(pred)
