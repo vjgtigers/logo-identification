@@ -20,8 +20,8 @@ printCurrTimeAndMessage("Done loading imports")
 seed = 1
 testTrainSplit = True
 showPCAgraphs = False
-saveScalerAndPCA = False #one of these should be true and one should be false depending on the step up
-loadScalersandPCAS = True #one of these should be true and one should be false depending on the step up
+saveScalerAndPCA = True #one of these should be true and one should be false depending on the step up
+loadScalersandPCAS = False #one of these should be true and one should be false depending on the step up
 neighbors = 2
 runKNN = True
 saveKNN = True
@@ -253,4 +253,4 @@ print(f"max train indicies = {train_data_max_indicies}")
 print(f"max test indicies = {test_data_max_indicies}")
 
 for i in test_data_max_indicies:
-    print(test_data[i], train_data[i])
+    print(i+1, test_data[i], train_data[i])

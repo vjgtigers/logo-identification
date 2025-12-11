@@ -3,9 +3,6 @@ import numpy as np
 from PIL import Image
 
 
-#testing filepath(s)
-filePath = "C:/Users/vjgti/PycharmProjects/cs3200_termProject/.venv/images/NBA_teams/unlabeled_sizeprocessed/96.png"
-
 class KnnNBALogoClassifier:
 
     # load in pre computed preprocessing steps and knn model
@@ -70,8 +67,3 @@ class KnnNBALogoClassifier:
         return self.knn.predict(item)
 
 
-knnPred = KnnNBALogoClassifier()
-
-knnPred.setK(2)
-print(knnPred.predict(filePath))
-print(knnPred.predict_top_results(filePath))
