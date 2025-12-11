@@ -12,6 +12,7 @@ import joblib
 import sklearn
 import time
 import matplotlib.pyplot as plt
+from runDetection import KnnNBALogoClassifier
 
 printCurrTimeAndMessage("Done loading imports")
 
@@ -19,8 +20,8 @@ printCurrTimeAndMessage("Done loading imports")
 seed = 1
 testTrainSplit = True
 showPCAgraphs = False
-saveScalerAndPCA = True #one of these should be true and one should be false depending on the step up
-loadScalersandPCAS = False #one of these should be true and one should be false depending on the step up
+saveScalerAndPCA = False #one of these should be true and one should be false depending on the step up
+loadScalersandPCAS = True #one of these should be true and one should be false depending on the step up
 neighbors = 2
 runKNN = True
 saveKNN = True
@@ -226,4 +227,30 @@ if runKNN == True:
     printCurrTimeAndMessage(f"KNN Accuracy (train)= {sklearn.metrics.accuracy_score(y_train, prediction_train)}")
 
 
+knnTester = KnnNBALogoClassifier("./modelInfo/knnModel.pkl", "./modelInfo/scaler_labeled.pkl", "./modelInfo/pca_labeled.pkl")
 
+test_data = []
+train_data = []
+
+for i in range(1, 11):
+    print("-"*50)
+    print(f"K Value = {i}")
+    knnTester.setK(i)
+
+    pred_test = knnTester._predictPreprocessedData(X_pca_test)
+    pred_train = knnTester._predictPreprocessedData(X_pca_train)
+    test_temp = sklearn.metrics.accuracy_score(y_test, pred_test)
+    train_temp = sklearn.metrics.accuracy_score(y_train, pred_train)
+    test_data.append(test_temp)
+    train_data.append(train_temp)
+    print(f"Test accuracy = {test_temp}")
+    print(f"Train accuracy = {train_temp}")
+
+
+test_data_max_indicies = np.array(test_data).argsort()[::-1]
+train_data_max_indicies = np.array(train_data).argsort()[::-1]
+print(f"max train indicies = {train_data_max_indicies}")
+print(f"max test indicies = {test_data_max_indicies}")
+
+for i in test_data_max_indicies:
+    print(test_data[i], train_data[i])

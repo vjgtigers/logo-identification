@@ -66,7 +66,8 @@ class KnnNBALogoClassifier:
 
         return tempList
 
-
+    def _predictPreprocessedData(self, item):
+        return self.knn.predict(item)
 
 
 knnPred = KnnNBALogoClassifier()
