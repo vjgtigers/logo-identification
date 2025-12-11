@@ -32,11 +32,9 @@ if loadScalersandPCAS == False:
     images = []
 
     images = preProFuncts.folderToPx("./images/NBA_teams/labeled_sizeprocessed")
-    images_unlabeled = preProFuncts.folderToPx("./images/NBA_teams/unlabeled_sizeprocessed")
-    print(f"Done loading in dataset(s) {len(images)}, {len(images_unlabeled)}")
+    ###images_unlabeled = preProFuncts.folderToPx("./images/NBA_teams/unlabeled_sizeprocessed")
+    print(f"Done loading in dataset(s) {len(images)}")###, {len(images_unlabeled)}")
 
-    #convert to a single one line vector - pillow
-        #if doesnt work reduce pixel count to like a 32x32
 
     print(f"images loaded: {len(images)}")
 
@@ -59,10 +57,10 @@ if loadScalersandPCAS == False:
     y = np.array(target)
     y_num = sklearn.preprocessing.LabelEncoder().fit_transform(y)
 
-    data_unlabeled = []
-    for i in images_unlabeled:
-        data_unlabeled.append(i[0])
-    X_un = np.array(data_unlabeled)
+    ###data_unlabeled = []
+    ###for i in images_unlabeled:
+    ###    data_unlabeled.append(i[0])
+    ###X_un = np.array(data_unlabeled)
 
     printCurrTimeAndMessage("pre preprocessing done")
     #TODO: normalize/standardize pixel colors -- this should happen before converting to a one D array
@@ -178,7 +176,7 @@ if saveScalerAndPCA == True:
 
 
 
-
+#PCA graph display pulled from sample code from canvas
 #------------------------------------------------------
 if showPCAgraphs == True:
     # 4. Explained variance to find the optimal number of PCs
@@ -229,29 +227,3 @@ if runKNN == True:
 
 
 
-##-------
-##When model fully built
-
-#final accuracy testing with train/testing data (fine for KNN, alternative needed for K-means)
-
-#confidence score
-
-#better interface
-
-##-------
-##Things that dont belong in pipeline
-
-#develop way to save all of the data after preprocessing if it takes a while to load to reduce loading times  --- done
-
-#save model data after training so it doesnt need to be trained again if that model is needed again  --- done
-
-#cluster id to label by majority vote?
-
-
-##
-##
-
-
-#IMAGE CONVERSION TOOLS
-##folderWebPtoPNG("C:\\Users\\vjgti\\Downloads\\NFL_teams", "C:\\Users\\vjgti\\PycharmProjects\\cs3200_termProject\\.venv\\images\\NFL_teams\\labeled")
-##scaleFolder("C:\\Users\\vjgti\\PycharmProjects\\cs3200_termProject\\.venv\\images\\NFL_teams\\labeled", "C:\\Users\\vjgti\\PycharmProjects\\cs3200_termProject\\.venv\\images\\NFL_teams\\labeled_sizeprocessed", (500, 500))
