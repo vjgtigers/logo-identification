@@ -15,23 +15,14 @@ import matplotlib.pyplot as plt
 
 printCurrTimeAndMessage("Done loading imports")
 
-#select how many images from the image dataset i want
-imagesToLoad = 0
-    #to start just load in one basic image from each team
-#randomly generate what images should be loaded
-
 #config
 seed = 1
-splitDataSet = False
-showPCAgraphs = False
 testTrainSplit = True
-runKNN = True
-onlyMLBPreprocessing = True
-saveScalerAndPCA = False
-loadScalersandPCAS = True
-clusters = 30
+showPCAgraphs = False
+saveScalerAndPCA = True #one of these should be true and one should be false depending on the step up
+loadScalersandPCAS = False #one of these should be true and one should be false depending on the step up
 neighbors = 2
-runKMeans = True
+runKNN = True
 saveKNN = True
 
 if loadScalersandPCAS == False:
@@ -39,9 +30,9 @@ if loadScalersandPCAS == False:
     #load in image data set
 
     images = []
-    if imagesToLoad == 0:
-        images = preProFuncts.folderToPx("./images/NBA_teams/labeled_sizeprocessed")
-        images_unlabeled = preProFuncts.folderToPx("./images/NBA_teams/unlabeled_sizeprocessed")
+
+    images = preProFuncts.folderToPx("./images/NBA_teams/labeled_sizeprocessed")
+    images_unlabeled = preProFuncts.folderToPx("./images/NBA_teams/unlabeled_sizeprocessed")
     print(f"Done loading in dataset(s) {len(images)}, {len(images_unlabeled)}")
 
     #convert to a single one line vector - pillow
@@ -49,7 +40,7 @@ if loadScalersandPCAS == False:
 
     print(f"images loaded: {len(images)}")
 
-    printCurrTimeAndMessage("pre preprocessing")
+    printCurrTimeAndMessage("Pre preprocessing")
 
     data = []
     target = []
@@ -81,10 +72,10 @@ if loadScalersandPCAS == False:
 
     printCurrTimeAndMessage("Test/Train split")
     X_train, X_test, y_train, y_test = X, X, y, y
-    X_un_train, X_un_test= X_un, X_un
+    ###X_un_train, X_un_test= X_un, X_un
     if testTrainSplit == True:
         X_train, X_test, y_train, y_test = sklearn.model_selection.train_test_split(X, y, test_size=.15, random_state=seed)
-        X_un_train, X_un_test = sklearn.model_selection.train_test_split(X_un, test_size=15, random_state=seed)
+        ###X_un_train, X_un_test = sklearn.model_selection.train_test_split(X_un, test_size=15, random_state=seed)
 
     #apply pca
         #reduce down to a useable amount for KNN and K-means
@@ -97,15 +88,15 @@ if loadScalersandPCAS == False:
     scalerVar = sklearn.preprocessing.StandardScaler()
     pcaVar = sklearn.decomposition.PCA(n_components=.90)
 
-    scaler_un = sklearn.preprocessing.StandardScaler()
-    pca_un = sklearn.decomposition.PCA(n_components=.90)
+    ###scaler_un = sklearn.preprocessing.StandardScaler()
+    ###pca_un = sklearn.decomposition.PCA(n_components=.90)
 
-    printCurrTimeAndMessage("StandardScaler labeled/unlabeled data")
+    printCurrTimeAndMessage("StandardScaler labeled")
     X_centered_train = scalerVar.fit_transform(X_train)
     X_centered_test = scalerVar.transform(X_test)
 
-    X_centered_un_train = scaler_un.fit_transform(X_un_train)
-    X_centered_un_test = scaler_un.transform(X_un_test)
+    ###X_centered_un_train = scaler_un.fit_transform(X_un_train)
+    ###X_centered_un_test = scaler_un.transform(X_un_test)
 
     printCurrTimeAndMessage("Done StandardScaling")
     printCurrTimeAndMessage("PCA labeled data")
@@ -113,10 +104,10 @@ if loadScalersandPCAS == False:
     X_pca_train = pcaVar.fit_transform(X_centered_train)
     X_pca_test = pcaVar.transform(X_centered_test)
 
-    printCurrTimeAndMessage("PCA unlabeled data")
+    ###printCurrTimeAndMessage("PCA unlabeled data")
 
-    X_pca_un_train = pca_un.fit_transform(X_centered_un_train)
-    X_pca_un_test = pca_un.transform(X_centered_un_test)
+    ###X_pca_un_train = pca_un.fit_transform(X_centered_un_train)
+    ###X_pca_un_test = pca_un.transform(X_centered_un_test)
 
     printCurrTimeAndMessage("Done applying PCA")
 
@@ -125,12 +116,12 @@ if loadScalersandPCAS == True:
     #load scalers
     printCurrTimeAndMessage("Loading Scalers")
     scalerVar = joblib.load("./modelInfo/scaler_labeled.pkl")
-    scaler_un = joblib.load("./modelInfo/scaler_unlabeled.pkl")
+    ###scaler_un = joblib.load("./modelInfo/scaler_unlabeled.pkl")
 
     #load PCA models
     printCurrTimeAndMessage("Loading PCA's")
     pcaVar = joblib.load("./modelInfo/pca_labeled.pkl")
-    pca_un = joblib.load("./modelInfo/pca_unlabeled.pkl")
+    ###pca_un = joblib.load("./modelInfo/pca_unlabeled.pkl")
 
     #Load pca data
     printCurrTimeAndMessage("Loading preprocessed labeled dataset")
@@ -142,9 +133,9 @@ if loadScalersandPCAS == True:
     y_test = np.load("./modelInfo/y_test.npy")
 
     #load unlabeled data
-    printCurrTimeAndMessage("Loading preprocessed unlabeled dataset")
-    X_pca_un_train = np.load("./modelInfo/X_unlab_train_pca.npy")
-    X_pca_un_test = np.load("./modelInfo/X_unlab_test_pca.npy")
+    ###printCurrTimeAndMessage("Loading preprocessed unlabeled dataset")
+    ###X_pca_un_train = np.load("./modelInfo/X_unlab_train_pca.npy")
+    ###X_pca_un_test = np.load("./modelInfo/X_unlab_test_pca.npy")
 
 
 
@@ -164,23 +155,23 @@ if saveScalerAndPCA == True:
     printCurrTimeAndMessage("Saving models and datasets")
 
     #save models
-    print("Saving models")
+    printCurrTimeAndMessage("Saving models")
     joblib.dump(scalerVar, "./modelInfo/scaler_labeled.pkl")
-    joblib.dump(scaler_un, "./modelInfo/scaler_unlabeled.pkl")
+    ###joblib.dump(scaler_un, "./modelInfo/scaler_unlabeled.pkl")
 
     joblib.dump(pcaVar, "./modelInfo/pca_labeled.pkl")
-    joblib.dump(pca_un, "./modelInfo/pca_unlabeled.pkl")
+    ###joblib.dump(pca_un, "./modelInfo/pca_unlabeled.pkl")
 
 
     #save modified data
-    print("Saving modified datasets")
+    printCurrTimeAndMessage("Saving modified datasets")
     np.save("./modelInfo/X_lab_train_pca.npy", X_pca_train)
     np.save("./modelInfo/X_lab_test_pca.npy",  X_pca_test)
     np.save("./modelInfo/y_train.npy", y_train)
     np.save("./modelInfo/y_test.npy",  y_test)
 
-    np.save("./modelInfo/X_unlab_train_pca.npy", X_pca_un_train)
-    np.save("./modelInfo/X_unlab_test_pca.npy",  X_pca_un_test)
+    ###np.save("./modelInfo/X_unlab_train_pca.npy", X_pca_un_train)
+    ###np.save("./modelInfo/X_unlab_test_pca.npy",  X_pca_un_test)
 
 
     printCurrTimeAndMessage("Done Saving")
@@ -213,9 +204,8 @@ if showPCAgraphs == True:
 #------------------------------------------------------
 
 
-#run KNN
-    #determine best K
 
+#run KNN
 
 if runKNN == True:
     printCurrTimeAndMessage("Beginning KNN")
@@ -226,16 +216,9 @@ if runKNN == True:
         joblib.dump(pcaVar, "./modelInfo/pca_labeled.pkl")
         joblib.dump(scalerVar, "./modelInfo/scaler_labeled.pkl")
 
-#run K-means
-    #amount of clusters is number of logos to identify
 
 
-if runKMeans == True:
-    printCurrTimeAndMessage("Beginning KMeans")
-    kmeans = sklearn.cluster.KMeans(n_clusters=len(np.unique(y_test)), random_state=seed)
-    kmeans.fit(X_pca_un_train)
-
-#accuracy testing (fine for KNN, alternative needed for K-means)
+#accuracy testing
 if runKNN == True:
     if testTrainSplit == False:
         print("TEST TRAIN NOT ENABLED")
@@ -245,22 +228,6 @@ if runKNN == True:
     printCurrTimeAndMessage(f"KNN Accuracy (train)= {sklearn.metrics.accuracy_score(y_train, prediction_train)}")
 
 
-
-#Kmeans?
-#kmeans_pred = kmeans.predict(X_pca_un_test)
-#cm = sklearn.metrics.confusion_matrix(temp, kmeans_pred)
-#row_ind, col_ind = linear_sum_assignment(-cm)
-#accuracy = cm[row_ind, col_ind].sum() / y_test.size
-#
-#print("KMeans accuracy:", accuracy)
-#
-#labels = kmeans.labels_
-#centroids = kmeans.cluster_centers_
-#plt.scatter(X_pca_un_train[:, 0], X_pca_un_train[:, 1], c=labels, cmap='viridis', s=50)
-#plt.scatter(centroids[:, 0], centroids[:, 1], c='red', marker='X', s=200)
-#plt.show()
-
-#use K-means to label data?
 
 ##-------
 ##When model fully built
