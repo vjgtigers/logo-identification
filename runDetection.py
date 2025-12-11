@@ -3,39 +3,18 @@ import numpy as np
 import preProFuncts
 
 
-#config info
-KNN_path = "./modelInfo/knnModel.pkl"
-standardScaler_path = "./modelInfo/scaler_labeled.pkl"
-PCA_path = "./modelInfo/pca_labeled.pkl"
+#testing filepath(s)
+filePath = "C:/Users/vjgti/PycharmProjects/cs3200_termProject/.venv/images/NBA_teams/unlabeled_sizeprocessed/96.png"
 
-#load models
-standardScaler = joblib.load(standardScaler_path)
-PCA = joblib.load(PCA_path)
-knn = joblib.load(KNN_path)
-
-
-#get image path from user
-#filePath = input("Image file path: ")
-filePath = "C:/Users/vjgti/Desktop/oment_pic5.png"
-
-
-#scale image
-sizeCorrection = preProFuncts.get_unique_filename(filePath)
-
-preProFuncts.scaleImage2(filePath, sizeCorrection, (500, 500))
-image1DArray = preProFuncts.imageToPx(sizeCorrection)
-reshaped = image1DArray.reshape(1, -1)
-image_scaled = standardScaler.transform(reshaped)
-image_pca = PCA.transform(image_scaled)
-
-pred = knn.predict(image_pca)
-print(pred)
-
-
-class KNNImageClassifier2:
+class KnnNBALogoClassifier:
 
     # load in pre computed preprocessing steps and knn model
-    def __init__(self, knn_path, scaler_path, pca_path, image_size=(500, 500)):
+    def __init__(self,
+                 knn_path = "./model_defaults/knn_NBA_default.pkl",
+                 scaler_path = "./model_defaults/scaler_NBA_default.pkl",
+                 pca_path = "./model_defaults/pca_NBA_default.pkl",
+                 image_size=(500, 500)):
+
         self.knn = joblib.load(knn_path)
         self.scaler = joblib.load(scaler_path)
         self.pca = joblib.load(pca_path)
@@ -61,7 +40,8 @@ class KNNImageClassifier2:
 
         return self.knn.predict(pcad)[0]
 
-    #predict the top X results and their "confidence score" which is really just (number of votes that class recived / total votes avalible)
+    #predict the top X results (may return less if less than X get 'votes') and their "confidence score"
+    #which is really just (number of votes that class recived / total votes avalible)
     def predict_top_results(self, file_path, num=3):
 
         preprocessed = self._preprocess(file_path)
@@ -73,13 +53,16 @@ class KNNImageClassifier2:
 
         tempList = []
         for i in maxProbIndicies:
-            tempList.append((str(knn.classes_[i]), float(probs[i])))
+            if probs[i] != 0.0:
+                tempList.append((str(self.knn.classes_[i]), float(probs[i])))
 
         return tempList
 
 
-knnPred = KNNImageClassifier2(KNN_path, standardScaler_path, PCA_path)
 
-knnPred.setK(10)
+
+knnPred = KnnNBALogoClassifier()
+
+knnPred.setK(2)
 print(knnPred.predict(filePath))
 print(knnPred.predict_top_results(filePath))
