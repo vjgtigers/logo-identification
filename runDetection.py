@@ -1,6 +1,6 @@
 import joblib
 import numpy as np
-import preProFuncts
+from PIL import Image
 
 
 #testing filepath(s)
@@ -24,10 +24,18 @@ class KnnNBALogoClassifier:
     def setK(self, k):
         self.knn.set_params(n_neighbors=k)
 
+    #scale image to correct size and convert to one-d array and return that
+    def returnScaledImageIn1DArray(self, input_path, dim):
+        image = Image.open(input_path).convert("RGB")
+        resized = image.resize(dim)
+        twoD = np.array(resized)
+        oneD = twoD.ravel()
+        return oneD
+
     #preprocessing steps before standardScaler and PCA
     def _preprocess(self, file_path):
 
-        oneD = preProFuncts.returnScaledImageIn1DArray(file_path, self.image_size)
+        oneD = self.returnScaledImageIn1DArray(file_path, self.image_size)
         temp = np.asarray(oneD).reshape(1, -1)
 
         return temp
