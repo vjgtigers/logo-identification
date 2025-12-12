@@ -19,9 +19,9 @@ printCurrTimeAndMessage("Done loading imports")
 #config
 seed = 1
 testTrainSplit = True
-showPCAgraphs = False
-saveScalerAndPCA = True #one of these should be true and one should be false depending on the step up
-loadScalersandPCAS = False #one of these should be true and one should be false depending on the step up
+showPCAgraphs = True
+saveScalerAndPCA = False #one of these should be true and one should be false depending on the step up
+loadScalersandPCAS = True #one of these should be true and one should be false depending on the step up
 neighbors = 2
 runKNN = True
 saveKNN = True
